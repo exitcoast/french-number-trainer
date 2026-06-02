@@ -7,7 +7,6 @@ progress.json
 
 # Local/generated site artifacts.
 dist/
-number-trainer/audio-cache.js
 
 # Dependency and tool caches.
 node_modules/

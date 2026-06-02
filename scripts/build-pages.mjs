@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const DIST = join(ROOT, "dist");
 const APP = join(ROOT, "number-trainer");
-const publishAudioCache = process.env.PUBLISH_AUDIO_CACHE === "1";
+const skipAudioCache = process.env.SKIP_AUDIO_CACHE === "1";
 
 async function copy(from, to) {
   await mkdir(dirname(to), { recursive: true });
@@ -29,7 +29,7 @@ await copy(join(APP, "index.html"), join(DIST, "index.html"));
 await copy(join(APP, "_headers"), join(DIST, "_headers"));
 
 const localAudioCache = join(APP, "audio-cache.js");
-if (publishAudioCache && await exists(localAudioCache)) {
+if (!skipAudioCache && await exists(localAudioCache)) {
   await copy(localAudioCache, join(DIST, "audio-cache.js"));
 } else {
   const emptyCache = {

@@ -2,7 +2,7 @@
 
 Static trainer for listening comprehension of French numbers 0-100.
 
-The public Cloudflare Pages build intentionally does not publish the local Langpractice audio cache. The deployed app uses browser text-to-speech unless `PUBLISH_AUDIO_CACHE=1` is set during the build.
+The Cloudflare Pages build publishes the checked-in audio cache when `number-trainer/audio-cache.js` exists. The app falls back to browser text-to-speech when the cache is missing or when `SKIP_AUDIO_CACHE=1` is set during the build.
 
 ## Local Work
 
@@ -41,13 +41,13 @@ Manual deployment is also available:
 npm run deploy:pages
 ```
 
-To intentionally publish the local audio cache, run:
+To build without publishing the audio cache, run:
 
 ```bash
-PUBLISH_AUDIO_CACHE=1 node scripts/build-pages.mjs
+SKIP_AUDIO_CACHE=1 node scripts/build-pages.mjs
 ```
 
-Only do this after confirming the source audio can be redistributed publicly.
+Only publish audio files after confirming the source audio can be redistributed publicly.
 
 ## GitHub Workflow
 
