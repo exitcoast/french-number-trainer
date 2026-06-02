@@ -21,6 +21,12 @@ The preview command uses Wrangler and serves the generated `dist/` directory.
 
 ## Cloudflare Pages
 
+Production URL:
+
+```text
+https://french-number-trainer.pages.dev
+```
+
 Recommended Pages settings:
 
 - Project name: `french-number-trainer`
