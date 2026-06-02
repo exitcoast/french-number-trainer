@@ -1,0 +1,17 @@
+.DS_Store
+
+# Private tutor memory and local progress data.
+AGENTS.md
+memory/
+progress.json
+
+# Local/generated site artifacts.
+dist/
+number-trainer/audio-cache.js
+
+# Dependency and tool caches.
+node_modules/
+.wrangler/
+.env
+.env.*
+!.env.example

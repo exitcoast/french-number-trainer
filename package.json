@@ -1,0 +1,14 @@
+{
+  "name": "french-number-trainer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-pages.mjs",
+    "preview": "npm run build && wrangler pages dev dist",
+    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name french-number-trainer --branch main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

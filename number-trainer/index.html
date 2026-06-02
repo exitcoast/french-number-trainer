@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>French Number Trainer 0-100</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f2ea;
+      --panel: #fffdf8;
+      --ink: #202124;
+      --muted: #63635d;
+      --line: #ded7ca;
+      --accent: #006d77;
+      --accent-strong: #004e58;
+      --good: #277246;
+      --bad: #b42318;
+      --warn: #a65f00;
+      --soft: #e8f4f3;
+      --shadow: 0 18px 42px rgba(24, 30, 32, 0.11);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, 0.85), rgba(246, 242, 234, 1)),
+        var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      min-height: 44px;
+      padding: 0 16px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    button:hover {
+      background: var(--accent-strong);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    button.secondary {
+      background: #e6e0d4;
+      color: var(--ink);
+    }
+
+    button.secondary:hover {
+      background: #d8d0c2;
+    }
+
+    button.danger {
+      background: #8f271f;
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      background: #e6e0d4;
+      color: var(--ink);
+    }
+
+    .tab-button[aria-selected="true"] {
+      background: var(--accent);
+      color: white;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .trainer {
+      padding: clamp(18px, 4vw, 34px);
+    }
+
+    .setup {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+      color: var(--ink);
+      padding: 0 12px;
+    }
+
+    .answer-zone {
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+      text-align: center;
+      min-height: 330px;
+      align-content: center;
+    }
+
+    .big-count {
+      font-size: clamp(2.4rem, 11vw, 6.4rem);
+      line-height: 0.95;
+      font-weight: 850;
+      letter-spacing: 0;
+      color: var(--accent-strong);
+      min-height: 1em;
+    }
+
+    .prompt {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+
+    .answer-input {
+      width: min(380px, 100%);
+      height: 64px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 800;
+      border-width: 2px;
+    }
+
+    .answer-input.correct {
+      border-color: var(--good);
+      background: #edf8f0;
+    }
+
+    .answer-input.wrong {
+      border-color: var(--bad);
+      background: #fff0ee;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .feedback {
+      min-height: 28px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .feedback.good {
+      color: var(--good);
+    }
+
+    .feedback.bad {
+      color: var(--bad);
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .metric {
+      background: var(--soft);
+      border-radius: 7px;
+      padding: 12px;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 1.45rem;
+      line-height: 1;
+      color: var(--accent-strong);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    details {
+      padding: 14px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .stats-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .table-wrap {
+      max-height: 390px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th,
+    td {
+      padding: 8px 9px;
+      text-align: right;
+      border-bottom: 1px solid #eee8dd;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: white;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #f9f5ed;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .small-note {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .about {
+      padding: clamp(18px, 4vw, 34px);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .about-section {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+    }
+
+    .about-section h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .about-section p,
+    .about-section li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .about-section ul,
+    .about-section ol {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .about-section li + li {
+      margin-top: 7px;
+    }
+
+    .formula {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      background: var(--soft);
+      color: var(--accent-strong);
+      font-weight: 800;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 820px) {
+      header,
+      .layout {
+        display: block;
+      }
+
+      header .status-pill {
+        margin-top: 12px;
+      }
+
+      .side {
+        margin-top: 16px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>French Number Trainer</h1>
+        <p>0-100, cyfry, audio i losowanie ważone tym, co sprawia Ci kłopot.</p>
+      </div>
+      <div id="audioStatus" class="status-pill">Audio cache: sprawdzam</div>
+    </header>
+
+    <nav class="tabs" aria-label="Widoki aplikacji">
+      <button id="practiceTab" class="tab-button" type="button" aria-selected="true">Practice</button>
+      <button id="aboutTab" class="tab-button" type="button" aria-selected="false">About</button>
+    </nav>
+
+    <div id="practiceView" class="layout">
+      <section class="panel trainer" aria-label="Trening liczb">
+        <div class="setup">
+          <label>
+            Tryb
+            <select id="trainingMode">
+              <option value="normal" selected>0-100 normal</option>
+              <option value="teen-core">10-20 Core</option>
+              <option value="seventy-lab">70-99 Lab</option>
+              <option value="bridge">10-20 -> 70-99</option>
+            </select>
+          </label>
+          <label>
+            Liczba pytań
+            <select id="sessionSize">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+              <option value="101">101</option>
+            </select>
+          </label>
+          <label>
+            Próg wolnej odpowiedzi
+            <select id="slowThreshold">
+              <option value="2500">2.5 s</option>
+              <option value="3500" selected>3.5 s</option>
+              <option value="5000">5 s</option>
+              <option value="7000">7 s</option>
+            </select>
+          </label>
+          <button id="startButton">Start</button>
+          <button id="stopButton" class="secondary" disabled>Koniec</button>
+        </div>
+
+        <div class="answer-zone">
+          <div class="prompt">
+            <span id="progressText">Gotowy</span>
+            <span id="voiceText" class="status-pill">Głos: losowy</span>
+          </div>
+          <div id="bigCount" class="big-count">--</div>
+          <input id="answerInput" class="answer-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="?" disabled>
+          <div class="controls">
+            <button id="replayButton" class="secondary" disabled>Replay R</button>
+            <button id="revealButton" class="secondary" disabled>Reveal Q</button>
+            <button id="nextButton" disabled>Dalej Enter</button>
+          </div>
+          <div id="feedback" class="feedback">Wybierz liczbę pytań i startujemy.</div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel metric-grid" aria-label="Metryki">
+          <div class="metric"><b id="doneMetric">0</b><span>w tej sesji</span></div>
+          <div class="metric"><b id="accuracyMetric">--</b><span>trafność</span></div>
+          <div class="metric"><b id="slowMetric">0</b><span>wolne odpowiedzi</span></div>
+          <div class="metric"><b id="hardMetric">--</b><span>najtrudniejsza</span></div>
+        </section>
+
+        <section class="panel">
+          <details open>
+            <summary>Statystyki lokalne</summary>
+            <div class="stats-actions">
+              <button id="exportButton" class="secondary">Eksport</button>
+              <button id="importButton" class="secondary">Import</button>
+              <button id="resetButton" class="danger">Reset</button>
+              <input id="importFile" class="hidden" type="file" accept="application/json">
+            </div>
+            <p class="small-note">Dane siedzą w localStorage tej przeglądarki. Liczby z wysoką wagą wracają częściej; liczby znane prawie znikają, ale nie całkiem.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Liczba</th>
+                    <th>Próby</th>
+                    <th>OK</th>
+                    <th>Błędy</th>
+                    <th>Reveal</th>
+                    <th>Śr. czas</th>
+                    <th>Waga</th>
+                  </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+      </aside>
+    </div>
+
+    <section id="aboutView" class="panel about hidden" aria-label="Dokumentacja">
+      <h1>Jak działa trener liczb</h1>
+      <p>To narzędzie ćwiczy szybkie rozpoznawanie francuskich liczebników ze słuchu. Nie chodzi o recytowanie listy, tylko o skrócenie drogi: słyszysz liczbę, wpisujesz cyfry, mózg buduje automatyczne mapowanie.</p>
+
+      <div class="about-grid">
+        <section class="about-section">
+          <h2>Jak trenować</h2>
+          <ol>
+            <li>Wybierz tryb i liczbę pytań.</li>
+            <li>Kliknij Start dopiero, gdy jesteś gotowy.</li>
+            <li>Wpisuj odpowiedź cyframi. Poprawna odpowiedź przechodzi dalej sama.</li>
+            <li>Użyj Replay, gdy chcesz usłyszeć liczbę jeszcze raz. Timer liczy się od ostatniego odsłuchu.</li>
+            <li>Reveal traktuj jak informację diagnostyczną, nie porażkę. Ta liczba wróci częściej.</li>
+          </ol>
+        </section>
+
+        <section class="about-section">
+          <h2>Tryby</h2>
+          <ul>
+            <li><b>0-100 normal</b>: ogólny trening całego zakresu.</li>
+            <li><b>10-20 Core</b>: automatyzacja liczb, które wracają później w 70-99.</li>
+            <li><b>70-99 Lab</b>: rodziny 70, 80, 90 i kontrasty typu 67/77/97.</li>
+            <li><b>10-20 -> 70-99</b>: mosty typu 12/72/92 oraz osobne dawki 70-79, 80-89, 90-99.</li>
+          </ul>
+        </section>
+
+        <section class="about-section">
+          <h2>Dlaczego 70-99 jest osobno</h2>
+          <p>W standardowym francuskim te liczby są składane, a nie liniowe. Dlatego aplikacja ćwiczy wzorce, nie tylko losowe numery.</p>
+          <span class="formula">75 = 60 + 15</span>
+          <span class="formula">80 = 4 x 20</span>
+          <span class="formula">97 = 80 + 17</span>
+        </section>
+
+        <section class="about-section">
+          <h2>Jak działa waga</h2>
+          <p>Każda liczba ma lokalną wagę. Im większa waga, tym częściej liczba wraca. Waga rośnie po błędzie, reveal, wolnej odpowiedzi i replayu. Rośnie łagodnie, żeby jedna pomyłka nie zdominowała całej sesji.</p>
+          <p>Na początku sesji aplikacja najpierw domyka część liczb, których jeszcze nie widziałeś w wybranym trybie. Potem wraca do ważonego losowania trudności.</p>
+        </section>
+
+        <section class="about-section">
+          <h2>Czas i przerwy</h2>
+          <p>Próg wolnej odpowiedzi możesz ustawić sam. Jeśli użyjesz Replay, timer resetuje się od nowego odsłuchu. Jeśli odejdziesz od komputera na dłużej, bardzo długi czas nie psuje średniej tej liczby.</p>
+        </section>
+
+        <section class="about-section">
+          <h2>Statystyki</h2>
+          <p>Statystyki są zapisywane lokalnie w tej przeglądarce. Eksport tworzy plik JSON, który możesz zachować albo podesłać do analizy. Import przywraca wcześniejsze wyniki.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="audio-cache.js"></script>
+  <script>
+    const NUMBERS = Array.from({ length: 101 }, (_, index) => index);
+    const TEEN_CORE = range(10, 20);
+    const SEVENTY_RANGE = range(70, 99);
+    const BRIDGE_BASES = range(10, 19);
+    const CONTRAST_SETS = [
+      [67, 77, 97],
+      [70, 80, 90],
+      [71, 81, 91],
+      [72, 82, 92],
+      [75, 85, 95],
+      [76, 86, 96],
+      [77, 87, 97],
+      [79, 89, 99]
+    ];
+    const MODE_LABELS = {
+      normal: "0-100 normal",
+      "teen-core": "10-20 Core",
+      "seventy-lab": "70-99 Lab",
+      bridge: "10-20 -> 70-99"
+    };
+    const STORAGE_KEY = "gregFrenchNumberTrainer.v1";
+    const AUDIO_CACHE = window.LANGPRACTICE_AUDIO_CACHE || { items: {} };
+
+    const words0to19 = [
+      "zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
+      "dix", "onze", "douze", "treize", "quatorze", "quinze", "seize",
+      "dix-sept", "dix-huit", "dix-neuf"
+    ];
+    const tens = {
+      20: "vingt",
+      30: "trente",
+      40: "quarante",
+      50: "cinquante",
+      60: "soixante"
+    };
+
+    function range(min, max) {
+      return Array.from({ length: max - min + 1 }, (_, index) => min + index);
+    }
+
+    function numberToFrench(n) {
+      if (n < 20) return words0to19[n];
+      if (n < 70) {
+        const ten = Math.floor(n / 10) * 10;
+        const unit = n % 10;
+        if (unit === 0) return tens[ten];
+        if (unit === 1) return `${tens[ten]} et un`;
+        return `${tens[ten]}-${words0to19[unit]}`;
+      }
+      if (n < 80) {
+        if (n === 71) return "soixante et onze";
+        return `soixante-${numberToFrench(n - 60)}`;
+      }
+      if (n === 80) return "quatre-vingts";
+      if (n < 100) return `quatre-vingt-${numberToFrench(n - 80)}`;
+      return "cent";
+    }
+
+    function defaultStats() {
+      const stats = {};
+      for (const number of NUMBERS) {
+        stats[number] = {
+          attempts: 0,
+          correct: 0,
+          wrong: 0,
+          reveals: 0,
+          slow: 0,
+          replays: 0,
+          totalMs: 0,
+          lastSeen: null
+        };
+      }
+      return { version: 1, createdAt: new Date().toISOString(), stats };
+    }
+
+    function loadState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (parsed && parsed.stats) {
+          const fresh = defaultStats();
+          return { ...fresh, ...parsed, stats: { ...fresh.stats, ...parsed.stats } };
+        }
+      } catch (error) {
+        console.warn("Could not load stats", error);
+      }
+      return defaultStats();
+    }
+
+    const AUTO_ADVANCE_MS = 650;
+    const IDLE_TIMEOUT_MS = 30000;
+
+    let state = loadState();
+    let session = null;
+    let current = null;
+    let currentAudio = null;
+    let answered = false;
+    let autoAdvanceTimer = null;
+
+    const els = {
+      audioStatus: document.getElementById("audioStatus"),
+      practiceTab: document.getElementById("practiceTab"),
+      aboutTab: document.getElementById("aboutTab"),
+      practiceView: document.getElementById("practiceView"),
+      aboutView: document.getElementById("aboutView"),
+      trainingMode: document.getElementById("trainingMode"),
+      sessionSize: document.getElementById("sessionSize"),
+      slowThreshold: document.getElementById("slowThreshold"),
+      startButton: document.getElementById("startButton"),
+      stopButton: document.getElementById("stopButton"),
+      progressText: document.getElementById("progressText"),
+      voiceText: document.getElementById("voiceText"),
+      bigCount: document.getElementById("bigCount"),
+      answerInput: document.getElementById("answerInput"),
+      replayButton: document.getElementById("replayButton"),
+      revealButton: document.getElementById("revealButton"),
+      nextButton: document.getElementById("nextButton"),
+      feedback: document.getElementById("feedback"),
+      doneMetric: document.getElementById("doneMetric"),
+      accuracyMetric: document.getElementById("accuracyMetric"),
+      slowMetric: document.getElementById("slowMetric"),
+      hardMetric: document.getElementById("hardMetric"),
+      statsBody: document.getElementById("statsBody"),
+      exportButton: document.getElementById("exportButton"),
+      importButton: document.getElementById("importButton"),
+      resetButton: document.getElementById("resetButton"),
+      importFile: document.getElementById("importFile")
+    };
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getStat(number) {
+      return state.stats[number] || defaultStats().stats[number];
+    }
+
+    function getWeight(number) {
+      const s = getStat(number);
+      if (s.attempts === 0) return 5;
+      const timedAttempts = Math.max(1, s.attempts - (s.pauses || 0));
+      const confidence = Math.min(1, Math.sqrt(s.attempts / 5));
+      const evidence = 0.45 + 0.55 * confidence;
+      const wrongRate = (s.wrong + 0.6) / (s.attempts + 3);
+      const revealRate = s.reveals / Math.max(1, s.attempts);
+      const slowRate = (s.slow + 0.4) / (s.attempts + 4);
+      const replayRate = Math.min(1, s.replays / Math.max(1, s.attempts));
+      const avgMs = s.totalMs / timedAttempts;
+      const timePenalty = Math.min(2.4, Math.max(0, (avgMs - 2800) / 1400));
+      const masteryDiscount = s.correct >= 4 && s.wrong === 0 && s.reveals === 0 && s.slow === 0 ? 0.22 : 1;
+      const difficulty = wrongRate * 7 + revealRate * 2.5 + slowRate * 2.4 + replayRate * 1.1 + timePenalty;
+      return Math.max(0.15, (1 + evidence * difficulty) * masteryDiscount);
+    }
+
+    function getModePool(mode) {
+      if (mode === "teen-core") return TEEN_CORE;
+      if (mode === "seventy-lab") return range(67, 99);
+      if (mode === "bridge") return [...TEEN_CORE, ...SEVENTY_RANGE];
+      return NUMBERS;
+    }
+
+    function getFamilyKey(number) {
+      if (number >= 10 && number <= 20) return "10-20";
+      if (number >= 60 && number <= 69) return "60s";
+      if (number >= 70 && number <= 79) return "70s";
+      if (number >= 80 && number <= 89) return "80s";
+      if (number >= 90 && number <= 99) return "90s";
+      return "other";
+    }
+
+    function getFamilyBoost(number, mode) {
+      if (mode === "normal") return 1;
+      const family = getFamilyKey(number);
+      const familyNumbers = NUMBERS.filter((candidate) => getFamilyKey(candidate) === family);
+      const seen = familyNumbers.map(getStat).filter((stat) => stat.attempts > 0);
+      if (!seen.length) return 1;
+      const attempts = seen.reduce((sum, stat) => sum + stat.attempts, 0);
+      const friction = seen.reduce((sum, stat) => sum + stat.wrong + stat.reveals + stat.slow + Math.min(2, stat.replays), 0);
+      return 1 + Math.min(0.9, friction / Math.max(4, attempts * 2));
+    }
+
+    function getModeWeight(number, mode) {
+      return getWeight(number) * getFamilyBoost(number, mode);
+    }
+
+    function weightedPick(excluded = [], pool = NUMBERS, mode = "normal") {
+      const excludedSet = new Set(excluded);
+      const candidates = pool.filter((number) => !excludedSet.has(number));
+      const activePool = candidates.length ? candidates : pool;
+      const total = activePool.reduce((sum, number) => sum + getModeWeight(number, mode), 0);
+      let target = Math.random() * total;
+      for (const number of activePool) {
+        target -= getModeWeight(number, mode);
+        if (target <= 0) return number;
+      }
+      return activePool[activePool.length - 1];
+    }
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function shuffled(items) {
+      return [...items].sort(() => Math.random() - 0.5);
+    }
+
+    function buildCoverageQueue(mode, target) {
+      const pool = getModePool(mode);
+      const unseen = pool.filter((number) => getStat(number).attempts === 0);
+      const limit = Math.max(1, Math.ceil(target * 0.35));
+      return shuffled(unseen).slice(0, limit);
+    }
+
+    function bridgeSetFor(base) {
+      if (base === 20) return [20, 80];
+      return [base, base + 60, base + 80];
+    }
+
+    function pickNextNumber(mode, recent) {
+      if (mode === "teen-core") {
+        return { number: weightedPick(recent, TEEN_CORE, mode), drill: "10-20 Core" };
+      }
+
+      if (mode === "seventy-lab") {
+        const roll = Math.random();
+        if (roll < 0.28) {
+          const familyPool = randomItem([range(70, 79), range(80, 89), range(90, 99)]);
+          return { number: weightedPick(recent, familyPool, mode), drill: `${familyPool[0]}-${familyPool[familyPool.length - 1]}` };
+        }
+        if (roll < 0.62) {
+          const contrastPool = randomItem(CONTRAST_SETS);
+          return { number: weightedPick(recent, contrastPool, mode), drill: "kontrast" };
+        }
+        return { number: weightedPick(recent, SEVENTY_RANGE, mode), drill: "mix 70-99" };
+      }
+
+      if (mode === "bridge") {
+        const roll = Math.random();
+        if (roll < 0.50) {
+          const base = randomItem(BRIDGE_BASES);
+          const bridgePool = bridgeSetFor(base);
+          return { number: weightedPick(recent, bridgePool, mode), drill: `${base} -> ${bridgePool.slice(1).join(" / ")}` };
+        }
+        if (roll < 0.65) return { number: weightedPick(recent, TEEN_CORE, mode), drill: "10-20" };
+        if (roll < 0.77) return { number: weightedPick(recent, range(70, 79), mode), drill: "70-79" };
+        if (roll < 0.89) return { number: weightedPick(recent, range(80, 89), mode), drill: "80-89" };
+        return { number: weightedPick(recent, range(90, 99), mode), drill: "90-99" };
+      }
+
+      return { number: weightedPick(recent, NUMBERS, mode), drill: "0-100" };
+    }
+
+    function numberBreakdown(number) {
+      if (number >= 70 && number <= 79) return `60 + ${number - 60}`;
+      if (number === 80) return "4 x 20";
+      if (number >= 81 && number <= 99) return `80 + ${number - 80}`;
+      return "";
+    }
+
+    function pickAudio(number) {
+      const variants = AUDIO_CACHE.items?.[number] || [];
+      if (!variants.length) return null;
+      const index = Math.floor(Math.random() * variants.length);
+      return { data: variants[index], label: `wariant ${index + 1}/${variants.length}` };
+    }
+
+    function playCurrentAudio(isReplay = false) {
+      if (!current) return;
+      if (isReplay) {
+        current.replays += 1;
+        current.startedAt = performance.now();
+        setFeedback("Timer zresetowany od ostatniego odsłuchu.", "");
+      }
+      if (currentAudio?.data) {
+        const audio = new Audio(`data:audio/mpeg;base64,${currentAudio.data}`);
+        audio.play().catch(() => {
+          setFeedback("Kliknij Replay jeszcze raz, przeglądarka zablokowała autoplay.", "bad");
+        });
+        return;
+      }
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(numberToFrench(current.number));
+        utterance.lang = "fr-FR";
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function clearAutoAdvance() {
+      if (!autoAdvanceTimer) return;
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+
+    function scheduleAutoAdvance() {
+      clearAutoAdvance();
+      autoAdvanceTimer = setTimeout(() => {
+        autoAdvanceTimer = null;
+        nextQuestion();
+      }, AUTO_ADVANCE_MS);
+    }
+
+    function startSession() {
+      clearAutoAdvance();
+      session = {
+        mode: els.trainingMode.value,
+        target: Number(els.sessionSize.value),
+        done: 0,
+        correct: 0,
+        slow: 0,
+        recent: [],
+        coverageQueue: []
+      };
+      session.coverageQueue = buildCoverageQueue(session.mode, session.target);
+      els.stopButton.disabled = false;
+      els.startButton.textContent = "Restart";
+      nextQuestion();
+    }
+
+    function stopSession() {
+      clearAutoAdvance();
+      session = null;
+      current = null;
+      answered = false;
+      currentAudio = null;
+      els.answerInput.disabled = true;
+      els.replayButton.disabled = true;
+      els.revealButton.disabled = true;
+      els.nextButton.disabled = true;
+      els.stopButton.disabled = true;
+      els.startButton.textContent = "Start";
+      els.bigCount.textContent = "--";
+      els.progressText.textContent = "Gotowy";
+      els.voiceText.textContent = "Głos: losowy";
+      setFeedback("Sesja zatrzymana. Dane zostały zapisane.", "");
+      render();
+    }
+
+    function nextQuestion() {
+      clearAutoAdvance();
+      if (!session || session.done >= session.target) {
+        finishSession();
+        return;
+      }
+      const coverageNumber = session.coverageQueue.shift();
+      const next = coverageNumber === undefined
+        ? pickNextNumber(session.mode, session.recent.slice(-5))
+        : { number: coverageNumber, drill: "coverage" };
+      const number = next.number;
+      session.recent.push(number);
+      if (session.recent.length > 12) session.recent.shift();
+      currentAudio = pickAudio(number);
+      current = {
+        number,
+        drill: next.drill,
+        startedAt: performance.now(),
+        replays: 0,
+        revealed: false
+      };
+      answered = false;
+      els.answerInput.value = "";
+      els.answerInput.className = "answer-input";
+      els.answerInput.disabled = false;
+      els.replayButton.disabled = false;
+      els.revealButton.disabled = false;
+      els.nextButton.disabled = true;
+      els.bigCount.textContent = "écoute";
+      els.progressText.textContent = `${session.done + 1} / ${session.target}`;
+      els.voiceText.textContent = currentAudio
+        ? `${MODE_LABELS[session.mode]} / ${next.drill} / ${currentAudio.label}`
+        : `${MODE_LABELS[session.mode]} / ${next.drill} / fallback TTS`;
+      setFeedback("Wpisz usłyszaną liczbę cyframi. Poprawna odpowiedź przejdzie dalej sama.", "");
+      els.answerInput.focus();
+      playCurrentAudio(false);
+      render();
+    }
+
+    function finishSession() {
+      clearAutoAdvance();
+      session = null;
+      current = null;
+      answered = false;
+      currentAudio = null;
+      els.answerInput.disabled = true;
+      els.replayButton.disabled = true;
+      els.revealButton.disabled = true;
+      els.nextButton.disabled = true;
+      els.stopButton.disabled = true;
+      els.startButton.textContent = "Start";
+      els.bigCount.textContent = "fin";
+      els.progressText.textContent = "Sesja zakończona";
+      els.voiceText.textContent = "Głos: losowy";
+      setFeedback("Koniec. Statystyki zaktualizowane.", "good");
+      render();
+    }
+
+    function submitAnswer({ reveal = false, forceWrong = false } = {}) {
+      if (!current || answered) return;
+      const typed = els.answerInput.value.trim();
+      const elapsed = performance.now() - current.startedAt;
+      const slowThreshold = Number(els.slowThreshold.value);
+      const correct = !reveal && !forceWrong && typed === String(current.number);
+      const timedOut = elapsed > IDLE_TIMEOUT_MS;
+      const slow = !timedOut && elapsed > slowThreshold;
+      const s = getStat(current.number);
+
+      s.attempts += 1;
+      s.replays += current.replays;
+      if (timedOut) {
+        s.pauses = (s.pauses || 0) + 1;
+      } else {
+        s.totalMs += Math.round(elapsed);
+      }
+      s.lastSeen = new Date().toISOString();
+
+      if (reveal) {
+        s.reveals += 1;
+        s.wrong += 1;
+      } else if (correct) {
+        s.correct += 1;
+        if (slow) s.slow += 1;
+      } else {
+        s.wrong += 1;
+      }
+
+      state.stats[current.number] = s;
+      saveState();
+
+      if (session) {
+        session.done += 1;
+        if (correct) session.correct += 1;
+        if (slow) session.slow += 1;
+      }
+
+      answered = true;
+      els.answerInput.disabled = true;
+      els.replayButton.disabled = true;
+      els.revealButton.disabled = true;
+      els.nextButton.disabled = correct;
+      els.bigCount.textContent = String(current.number);
+      els.answerInput.classList.add(correct ? "correct" : "wrong");
+
+      if (reveal) {
+        const breakdown = numberBreakdown(current.number);
+        const hint = breakdown ? ` = ${breakdown}` : "";
+        setFeedback(`Reveal: ${current.number} (${numberToFrench(current.number)}${hint}).`, "bad");
+      } else if (correct && timedOut) {
+        setFeedback(`Dobrze: ${current.number}. Długa przerwa nie obciążyła czasu tej liczby.`, "good");
+      } else if (correct && slow) {
+        setFeedback(`Dobrze, ale za wolno: ${(elapsed / 1000).toFixed(1)} s. Ta liczba jeszcze wróci.`, "bad");
+      } else if (correct && current.replays > 0) {
+        setFeedback("Dobrze po powtórce. Replay zwiększy ekspozycję, ale nie psuje czasu.", "good");
+      } else if (correct) {
+        setFeedback(`Dobrze: ${current.number}.`, "good");
+      } else {
+        const breakdown = numberBreakdown(current.number);
+        const hint = breakdown ? ` = ${breakdown}` : "";
+        setFeedback(`Nie: wpisałeś ${typed || "nic"}, było ${current.number} (${numberToFrench(current.number)}${hint}).`, "bad");
+      }
+      render();
+      if (correct) {
+        scheduleAutoAdvance();
+      } else {
+        els.nextButton.focus();
+      }
+    }
+
+    function setFeedback(text, kind) {
+      els.feedback.textContent = text;
+      els.feedback.className = `feedback ${kind || ""}`;
+    }
+
+    function setActiveView(view) {
+      const showingAbout = view === "about";
+      els.practiceView.classList.toggle("hidden", showingAbout);
+      els.aboutView.classList.toggle("hidden", !showingAbout);
+      els.practiceTab.setAttribute("aria-selected", String(!showingAbout));
+      els.aboutTab.setAttribute("aria-selected", String(showingAbout));
+      if (!showingAbout) els.answerInput.focus();
+    }
+
+    function render() {
+      const cacheCount = Object.values(AUDIO_CACHE.items || {}).filter((items) => items?.length).length;
+      const variantCount = Object.values(AUDIO_CACHE.items || {}).reduce((sum, items) => sum + (items?.length || 0), 0);
+      els.audioStatus.textContent = cacheCount
+        ? `Audio cache: ${cacheCount}/101 liczb, ${variantCount} nagrań`
+        : "Audio cache: brak, używam TTS";
+
+      if (session) {
+        els.doneMetric.textContent = `${session.done}/${session.target}`;
+        els.accuracyMetric.textContent = session.done ? `${Math.round((session.correct / session.done) * 100)}%` : "--";
+        els.slowMetric.textContent = String(session.slow);
+      } else {
+        const totals = Object.values(state.stats).reduce((acc, s) => {
+          acc.attempts += s.attempts;
+          acc.correct += s.correct;
+          acc.slow += s.slow;
+          return acc;
+        }, { attempts: 0, correct: 0, slow: 0 });
+        els.doneMetric.textContent = String(totals.attempts);
+        els.accuracyMetric.textContent = totals.attempts ? `${Math.round((totals.correct / totals.attempts) * 100)}%` : "--";
+        els.slowMetric.textContent = String(totals.slow);
+      }
+
+      const selectedMode = session?.mode || els.trainingMode.value;
+      const activePool = getModePool(selectedMode);
+      const hardest = activePool
+        .map((number) => ({ number, weight: getModeWeight(number, selectedMode), attempts: getStat(number).attempts }))
+        .filter((item) => item.attempts > 0)
+        .sort((a, b) => b.weight - a.weight)[0];
+      els.hardMetric.textContent = hardest ? String(hardest.number) : "--";
+      renderStatsTable();
+    }
+
+    function renderStatsTable() {
+      const selectedMode = session?.mode || els.trainingMode.value;
+      const activePool = getModePool(selectedMode);
+      const rows = activePool.map((number) => {
+        const s = getStat(number);
+        const timedAttempts = Math.max(0, s.attempts - (s.pauses || 0));
+        const avg = timedAttempts ? `${(s.totalMs / timedAttempts / 1000).toFixed(1)} s` : "--";
+        return {
+          number,
+          attempts: s.attempts,
+          correct: s.correct,
+          wrong: s.wrong,
+          reveals: s.reveals,
+          avg,
+          weight: getModeWeight(number, selectedMode)
+        };
+      }).sort((a, b) => b.weight - a.weight || a.number - b.number);
+
+      els.statsBody.innerHTML = rows.map((row) => `
+        <tr>
+          <td>${row.number}</td>
+          <td>${row.attempts}</td>
+          <td>${row.correct}</td>
+          <td>${row.wrong}</td>
+          <td>${row.reveals}</td>
+          <td>${row.avg}</td>
+          <td>${row.weight.toFixed(2)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function exportStats() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `french-number-stats-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function importStats(file) {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed.stats) throw new Error("Brak pola stats");
+      const fresh = defaultStats();
+      state = { ...fresh, ...parsed, stats: { ...fresh.stats, ...parsed.stats } };
+      saveState();
+      render();
+      setFeedback("Import statystyk gotowy.", "good");
+    }
+
+    els.startButton.addEventListener("click", startSession);
+    els.stopButton.addEventListener("click", stopSession);
+    els.practiceTab.addEventListener("click", () => setActiveView("practice"));
+    els.aboutTab.addEventListener("click", () => setActiveView("about"));
+    els.trainingMode.addEventListener("change", render);
+    els.replayButton.addEventListener("click", () => playCurrentAudio(true));
+    els.revealButton.addEventListener("click", () => submitAnswer({ reveal: true }));
+    els.nextButton.addEventListener("click", nextQuestion);
+    els.exportButton.addEventListener("click", exportStats);
+    els.importButton.addEventListener("click", () => els.importFile.click());
+    els.importFile.addEventListener("change", () => {
+      const file = els.importFile.files?.[0];
+      if (!file) return;
+      importStats(file).catch((error) => setFeedback(`Import nie wyszedł: ${error.message}`, "bad"));
+      els.importFile.value = "";
+    });
+    els.resetButton.addEventListener("click", () => {
+      if (!confirm("Reset lokalnych statystyk?")) return;
+      state = defaultStats();
+      saveState();
+      render();
+      setFeedback("Statystyki wyczyszczone.", "");
+    });
+
+    els.answerInput.addEventListener("input", () => {
+      els.answerInput.value = els.answerInput.value.replace(/\D/g, "").slice(0, 3);
+      if (current && !answered && els.answerInput.value === String(current.number)) {
+        submitAnswer();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (!current || event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key === "r" && !els.replayButton.disabled) {
+        event.preventDefault();
+        playCurrentAudio(true);
+      }
+      if (key === "q" && !els.revealButton.disabled) {
+        event.preventDefault();
+        submitAnswer({ reveal: true });
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (!answered && current) {
+          submitAnswer({ forceWrong: true });
+        } else if (!els.nextButton.disabled) {
+          nextQuestion();
+        }
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
