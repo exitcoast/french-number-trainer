@@ -26,6 +26,7 @@ await rm(DIST, { recursive: true, force: true });
 await mkdir(DIST, { recursive: true });
 
 await copy(join(APP, "index.html"), join(DIST, "index.html"));
+await copy(join(APP, "stats-validation.js"), join(DIST, "stats-validation.js"));
 await copy(join(APP, "_headers"), join(DIST, "_headers"));
 
 const localAudioCache = join(APP, "audio-cache.js");

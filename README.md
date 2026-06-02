@@ -79,11 +79,30 @@ Use two rollback layers:
 
 Cloudflare Pages keeps deployment history, so a production rollback can be done without deleting Git history.
 
+## Security Checks
+
+Run the local security checks with:
+
+```bash
+npm run test:security
+```
+
+GitHub Actions runs the build and import validation tests on pushes and pull requests. It also includes a scheduled/manual OWASP ZAP baseline scan against the production Pages URL and uploads the generated reports as workflow artifacts.
+
+The stats import path is intentionally constrained:
+
+- imported files are limited to 128 KB in the browser
+- only stats for numbers 0-100 are accepted
+- stat counters are normalized to bounded integers
+- invalid dates become `null`
+- unknown fields are ignored
+
 ## Useful References
 
 - Cloudflare Pages direct upload: https://developers.cloudflare.com/pages/get-started/direct-upload/
 - Cloudflare Pages Git integration: https://developers.cloudflare.com/pages/configuration/git-integration/
 - Cloudflare Pages rollbacks: https://developers.cloudflare.com/pages/configuration/rollbacks/
+- OWASP ZAP baseline scan: https://www.zaproxy.org/docs/docker/baseline-scan/
 
 ## Project Layout
 

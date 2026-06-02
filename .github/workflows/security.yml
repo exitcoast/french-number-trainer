@@ -1,0 +1,62 @@
+name: Security
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-security-tests:
+    name: Build and Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Pages artifact
+        run: npm run build
+
+      - name: Run import validation tests
+        run: npm run test:security
+
+  zap-baseline:
+    name: OWASP ZAP Baseline
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create report directory
+        run: mkdir -p security-reports
+
+      - name: Run ZAP baseline scan
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/security-reports:/zap/wrk/:rw" \
+            -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t https://french-number-trainer.pages.dev \
+            -r zap-report.html \
+            -w zap-report.md \
+            -I
+
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline-reports
+          path: security-reports/

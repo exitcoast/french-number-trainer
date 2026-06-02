@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-pages.mjs",
+    "test:security": "node scripts/security-import-tests.mjs",
     "preview": "npm run build && wrangler pages dev dist",
     "deploy:pages": "npm run build && wrangler pages deploy dist --project-name french-number-trainer --branch main"
   },
